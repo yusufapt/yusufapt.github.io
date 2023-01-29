@@ -1,0 +1,57 @@
+$r: 7.5em;
+
+html, body, div { display: grid }
+
+html { height: 100% }
+
+body {
+	perspective: 25em;
+	background: #262626
+}
+
+div { transform-style: preserve-3d }
+
+div, ::before, ::after { grid-area: 1/ 1 }
+
+.cube {
+	place-self: center;
+	animation: r 15s linear infinite
+}
+
+@keyframes r { to { transform: rotatey(1turn) } }
+
+.face {
+	--p: 0;
+	--s: calc(2*var(--p) - 1);
+	transform: 
+		rotate3d(var(--v), 90deg)
+		scale3d(var(--s), var(--s), var(--s))
+		translatez($r);
+	
+	&:nth-child(2n) { --p: 1 }
+	
+	@for $i from 0 to 3 {
+		&:nth-child(n + #{2*$i + 1}) {
+			$v: ();
+			
+			@for $j from 0 to 3 { $v: $v, if($i == $j, 1, 0) }
+			
+			--v: #{$v}
+		}
+	}
+	
+	&::before, &::after {
+		--k: 0;
+		padding: $r;
+		backface-visibility: hidden;
+		transform: scalez(calc(2*var(--k) - 1));
+		background: 
+			hsla(calc(var(--k)*210 + 25), 100%, calc(68% + var(--k)*10%), .5);
+		backdrop-filter: blur(calc(var(--k)*5px));
+		mask: 			
+			repeating-radial-gradient(red 0 calc(20% - 1px), 
+					transparent 20% calc(40% - 1px), red 40%);
+		content: ''
+	}
+	
+	&::after { --k: 1 }
